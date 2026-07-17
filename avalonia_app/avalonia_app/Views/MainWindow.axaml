@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NakhonPartsDashboard.ViewModels"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        x:Class="NakhonPartsDashboard.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="แผงควบคุมกลาง - นครอะไหล่"
+        Width="1400" Height="900"
+        Background="#0F1520">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="20">
+
+            <TextBlock Text="แผงควบคุมกลาง - นครอะไหล่ (Central Dashboard - Nakhon Parts)"
+                       FontSize="24" FontWeight="Bold" Foreground="White" />
+
+            <TextBlock Text="{Binding StatusMessage}" Foreground="Gray" FontSize="12" />
+
+            <!-- 1. POS Status Cards -->
+            <TextBlock Text="1. สถานะเครื่อง POS ทั้งหมด (Total POS Status)"
+                       FontSize="18" FontWeight="SemiBold" Foreground="White" />
+
+            <ItemsControl ItemsSource="{Binding PosCards}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PosCardViewModel">
+                        <Border Margin="6" Padding="16" CornerRadius="10"
+                                Background="#1A2233"
+                                BorderThickness="2"
+                                BorderBrush="{Binding IsLive, Converter={x:Static vm:LiveBorderConverter.Instance}}">
+                            <StackPanel Spacing="8">
+                                <DockPanel>
+                                    <TextBlock Text="{Binding PosLabel}" FontWeight="Bold"
+                                               Foreground="White" FontSize="16" />
+                                    <TextBlock Text="● Live" Foreground="LimeGreen" FontSize="12"
+                                               HorizontalAlignment="Right"
+                                               IsVisible="{Binding IsLive}" />
+                                </DockPanel>
+
+                                <TextBlock Foreground="LightGray" FontSize="13">
+                                    <Run Text="Last Sale Total: " />
+                                    <Run Text="{Binding LastSaleTotal, StringFormat={}{0:N0}}" FontWeight="Bold" />
+                                </TextBlock>
+
+                                <Grid ColumnDefinitions="*,*,*">
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="บช:เครดิต" FontSize="11" Foreground="Gray" />
+                                        <TextBlock Text="{Binding Credit, StringFormat={}{0:N0}}"
+                                                   FontSize="13" Foreground="White" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="โอนเงิน" FontSize="11" Foreground="Gray" />
+                                        <TextBlock Text="{Binding Transfer, StringFormat={}{0:N0}}"
+                                                   FontSize="13" Foreground="White" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="เงินสด" FontSize="11" Foreground="Gray" />
+                                        <TextBlock Text="{Binding Cash, StringFormat={}{0:N0}}"
+                                                   FontSize="13" Foreground="White" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <lvc:CartesianChart Series="{Binding TrendSeries}"
+                                                     Height="50"
+                                                     XAxes="{x:Null}"
+                                                     YAxes="{x:Null}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- 2. Live Transaction Feed + Donut -->
+            <TextBlock Text="2. รายการธุรกรรมล่าสุด (Live Transaction Feed)"
+                       FontSize="18" FontWeight="SemiBold" Foreground="White" />
+
+            <Grid ColumnDefinitions="2*,1*">
+                <DataGrid Grid.Column="0" ItemsSource="{Binding Transactions}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          Background="#1A2233" Foreground="White"
+                          GridLinesVisibility="Horizontal" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="เวลา" Binding="{Binding Date}" Width="110" />
+                        <DataGridTextColumn Header="POS" Binding="{Binding SaleLot, StringFormat='POS {0}'}" Width="80" />
+                        <DataGridTextColumn Header="รายการสินค้าที่ขาย" Binding="{Binding ProdId}" Width="*" />
+                        <DataGridTextColumn Header="ยอดเงิน" Binding="{Binding Amount, StringFormat={}{0:N0}}" Width="100" />
+                        <DataGridTextColumn Header="รูปแบบการชำระเงิน" Binding="{Binding PaymentTypeDisplay}" Width="140" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Border Grid.Column="1" Margin="12,0,0,0" Padding="12"
+                        CornerRadius="10" Background="#1A2233">
+                    <lvc:PieChart Series="{Binding DonutSeries}" LegendPosition="Bottom" />
+                </Border>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
