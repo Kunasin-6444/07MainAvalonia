@@ -21,16 +21,15 @@ public class ApiClient
         };
     }
 
-    public async Task<List<PosStatusModel>> GetPosStatusAsync()
+    /// <summary>
+    /// Single combined request — replaces two separate calls to /pos/status
+    /// and /pos/latest-transactions. The server runs the heavy JOIN query once
+    /// and returns everything the dashboard needs in one round-trip.
+    /// </summary>
+    public async Task<DashboardResponse> GetDashboardAsync()
     {
         // Relative path must NOT start with '/' when BaseAddress ends with '/'
-        var result = await _http.GetFromJsonAsync<List<PosStatusModel>>("pos/status");
-        return result ?? new List<PosStatusModel>();
-    }
-
-    public async Task<TransactionsResponse> GetLatestTransactionsAsync()
-    {
-        var result = await _http.GetFromJsonAsync<TransactionsResponse>("pos/latest-transactions");
-        return result ?? new TransactionsResponse();
+        var result = await _http.GetFromJsonAsync<DashboardResponse>("pos/dashboard");
+        return result ?? new DashboardResponse();
     }
 }

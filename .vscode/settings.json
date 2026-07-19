@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/fastapi_app/fastapi_app/venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/fastapi_app/fastapi_app/venv/Lib/site-packages"
+  ],
+  "python.analysis.venvPath": "${workspaceFolder}/fastapi_app/fastapi_app",
+  "python.analysis.venv": "venv",
+  "pyrefly.pythonInterpreter": "${workspaceFolder}/fastapi_app/fastapi_app/venv/Scripts/python.exe"
+}

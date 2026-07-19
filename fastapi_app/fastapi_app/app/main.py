@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from app.schemas import PosStatus, TransactionsResponse, DashboardResponse
 from app.queries import fetch_pos_status, fetch_transactions, fetch_dashboard
 
+# Force reload for modular queries package
 app = FastAPI(title="Nakhon Parts Dashboard API")
 
 # Allow the Avalonia desktop client (and local testing tools) to call this API

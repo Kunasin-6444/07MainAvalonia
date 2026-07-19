@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using NakhonPartsDashboard.Models;
@@ -9,26 +10,58 @@ using SkiaSharp;
 
 namespace NakhonPartsDashboard.ViewModels;
 
-public partial class MainWindowViewModel : ObservableObject
+/// <summary>
+/// Main view-model — does NOT use [ObservableProperty] / [RelayCommand] source
+/// generators to avoid the duplicate-analyzer bug in .NET SDK 10 with
+/// CommunityToolkit.Mvvm.  Plain INotifyPropertyChanged is used instead.
+/// </summary>
+public class MainWindowViewModel : INotifyPropertyChanged
 {
     private readonly ApiClient _api = new();
     private readonly System.Timers.Timer _refreshTimer;
 
-    [ObservableProperty]
+    // ── INotifyPropertyChanged ───────────────────────────────────────────────
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    // ── Observable properties ─────────────────────────────────────────────────
     private ObservableCollection<PosCardViewModel> _posCards = new();
+    public ObservableCollection<PosCardViewModel> PosCards
+    {
+        get => _posCards;
+        set { _posCards = value; OnPropertyChanged(); }
+    }
 
-    [ObservableProperty]
     private ObservableCollection<TransactionModel> _transactions = new();
+    public ObservableCollection<TransactionModel> Transactions
+    {
+        get => _transactions;
+        set { _transactions = value; OnPropertyChanged(); }
+    }
 
-    [ObservableProperty]
     private ISeries[] _donutSeries = Array.Empty<ISeries>();
+    public ISeries[] DonutSeries
+    {
+        get => _donutSeries;
+        set { _donutSeries = value; OnPropertyChanged(); }
+    }
 
-    [ObservableProperty]
     private string _statusMessage = "Loading...";
+    public string StatusMessage
+    {
+        get => _statusMessage;
+        set { _statusMessage = value; OnPropertyChanged(); }
+    }
+
+    // ── Command ───────────────────────────────────────────────────────────────
+    public ICommand LoadDataCommand { get; }
 
     public MainWindowViewModel()
     {
-        _refreshTimer = new System.Timers.Timer(15_000); // refresh every 15s (queries now ~5s with DB indexes)
+        LoadDataCommand = new AsyncRelayCommand(LoadDataAsync);
+
+        _refreshTimer = new System.Timers.Timer(15_000); // refresh every 15 s
         _refreshTimer.Elapsed += async (_, _) => await LoadDataAsync();
         _refreshTimer.Start();
 
@@ -37,40 +70,31 @@ public partial class MainWindowViewModel : ObservableObject
 
     private volatile bool _isLoading = false;
 
-    [RelayCommand]
     private async Task LoadDataAsync()
     {
-        // Prevent concurrent calls: if a load is already in progress (e.g. from
-        // the timer firing while the previous request is still running), skip it.
         if (_isLoading) return;
         _isLoading = true;
 
         try
         {
-            // Run both API calls in parallel — cuts total wait from
-            // (posStatus + transactions) sequential to max(posStatus, transactions).
-            var posTask = _api.GetPosStatusAsync();
-            var txTask  = _api.GetLatestTransactionsAsync();
-            await Task.WhenAll(posTask, txTask);
+            // Single round-trip to /pos/dashboard — server runs the heavy JOIN
+            // query exactly once and returns all data. Eliminates MySQL I/O
+            // contention that caused timeouts when two parallel queries ran.
+            var dashboard = await _api.GetDashboardAsync();
 
-            var statusList = posTask.Result;
-            var txResponse = txTask.Result;
-
-            // Must update ObservableCollections on the UI thread
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
                 PosCards = new ObservableCollection<PosCardViewModel>(
-                    statusList.Select(s => new PosCardViewModel(s)));
+                    dashboard.PosCards.Select(s => new PosCardViewModel(s)));
 
-                Transactions = new ObservableCollection<TransactionModel>(txResponse.Transactions);
+                Transactions = new ObservableCollection<TransactionModel>(dashboard.Transactions);
 
-                DonutSeries = BuildDonutSeries(txResponse.PaymentSummary);
+                DonutSeries = BuildDonutSeries(dashboard.PaymentSummary);
                 StatusMessage = $"Updated {DateTime.Now:HH:mm:ss}";
             });
         }
         catch (Exception ex)
         {
-            // Print full details to console so the real cause is visible
             Console.WriteLine($"[LoadDataAsync ERROR] {ex.GetType().Name}: {ex.Message}");
             Console.WriteLine(ex.ToString());
             StatusMessage = $"Error: {ex.GetType().Name} — {ex.Message}";
@@ -110,5 +134,31 @@ public partial class MainWindowViewModel : ObservableObject
                     $"เงินสด: {summary.Cash.Percent}% ({summary.Cash.TotalAmount:N0} บาท)"
             }
         };
+    }
+}
+
+/// <summary>Minimal ICommand wrapper for async tasks.</summary>
+public class AsyncRelayCommand : ICommand
+{
+    private readonly Func<Task> _execute;
+    private bool _isExecuting;
+
+    public AsyncRelayCommand(Func<Task> execute) => _execute = execute;
+
+    public event EventHandler? CanExecuteChanged;
+
+    public bool CanExecute(object? parameter) => !_isExecuting;
+
+    public async void Execute(object? parameter)
+    {
+        if (_isExecuting) return;
+        _isExecuting = true;
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        try   { await _execute(); }
+        finally
+        {
+            _isExecuting = false;
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

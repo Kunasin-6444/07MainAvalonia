@@ -6,7 +6,9 @@
         x:DataType="vm:MainWindowViewModel"
         Title="แผงควบคุมกลาง - นครอะไหล่"
         Width="1400" Height="900"
-        Background="#0F1520">
+        Background="#0F1520"
+        FontFamily="Segoe UI, Tahoma, Arial Unicode MS">
+
 
     <ScrollViewer>
         <StackPanel Margin="24" Spacing="20">
@@ -78,17 +80,19 @@
             <TextBlock Text="2. รายการธุรกรรมล่าสุด (Live Transaction Feed)"
                        FontSize="18" FontWeight="SemiBold" Foreground="White" />
 
-            <Grid ColumnDefinitions="2*,1*">
+            <Grid ColumnDefinitions="2*,1*" Height="260">
                 <DataGrid Grid.Column="0" ItemsSource="{Binding Transactions}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           Background="#1A2233" Foreground="White"
-                          GridLinesVisibility="Horizontal" BorderThickness="0">
+                          GridLinesVisibility="Horizontal" BorderThickness="0"
+                          RowBackground="#1A2233"
+                          HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="เวลา" Binding="{Binding Date}" Width="110" />
-                        <DataGridTextColumn Header="POS" Binding="{Binding SaleLot, StringFormat='POS {0}'}" Width="80" />
-                        <DataGridTextColumn Header="รายการสินค้าที่ขาย" Binding="{Binding ProdId}" Width="*" />
-                        <DataGridTextColumn Header="ยอดเงิน" Binding="{Binding Amount, StringFormat={}{0:N0}}" Width="100" />
-                        <DataGridTextColumn Header="รูปแบบการชำระเงิน" Binding="{Binding PaymentTypeDisplay}" Width="140" />
+                        <DataGridTextColumn Header="เวลา"    Binding="{Binding Date, Mode=OneWay}"    Width="110" />
+                        <DataGridTextColumn Header="POS"     Binding="{Binding SaleLot, StringFormat='POS \{0\}', Mode=OneWay}" Width="80" />
+                        <DataGridTextColumn Header="รายการสินค้าที่ขาย" Binding="{Binding ProdId, Mode=OneWay}"  Width="*" />
+                        <DataGridTextColumn Header="ยอดเงิน" Binding="{Binding Amount, StringFormat=\{0:N0\}, Mode=OneWay}"    Width="100" />
+                        <DataGridTextColumn Header="รูปแบบการชำระเงิน"  Binding="{Binding PaymentTypeDisplay, Mode=OneWay}"    Width="140" />
                     </DataGrid.Columns>
                 </DataGrid>
 

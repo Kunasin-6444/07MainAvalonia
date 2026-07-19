@@ -1,4 +1,4 @@
-﻿---
+---
 name: update_project_docs
 description: >
   Automatically update the project's troubleshooting_log.md and/or
@@ -11,12 +11,18 @@ description: >
 
 # Skill: Update Project Docs
 
-This skill keeps two markdown files in sync with the current project state:
+This skill keeps three markdown files in sync with the current project state:
 
 | File | Purpose |
 |---|---|
 | `troubleshooting_log.md` | Running record of every bug found, its root cause, and how it was fixed |
 | `dashboard_phase1_plan.md` | Implementation plan with completion status |
+| `plan.md` | Central project checklist and milestones |
+
+---
+
+## ⚠️ MANDATORY RULE: Ask Before Updating
+Before creating or modifying any `.md` file (including `plan.md`, `troubleshooting_log.md`, and `dashboard_phase1_plan.md`), **you must ask the user for explicit permission first**. You should present the planned changes and only proceed once approval is given.
 
 ---
 
@@ -25,7 +31,7 @@ This skill keeps two markdown files in sync with the current project state:
 Invoke this skill automatically whenever:
 
 1. **A bug is found and fixed** during any task — add a new numbered entry to `troubleshooting_log.md`.
-2. **A plan section is completed** — update the relevant section in `dashboard_phase1_plan.md` with a checkmark or completion note.
+2. **A plan/milestone section is completed** — update the relevant section in `dashboard_phase1_plan.md` and/or `plan.md` with a checkmark or completion note.
 3. **A new architectural decision is made** — add a note to the relevant plan section.
 4. **The user explicitly asks** to "update the log", "log this bug", "mark as done", etc.
 
@@ -33,13 +39,14 @@ Invoke this skill automatically whenever:
 
 ## Locating the Files
 
-Both files live at the workspace root:
+The files live in the `docs/` directory:
 
-    d:\SideProject\07MainAvalonia\troubleshooting_log.md
-    d:\SideProject\07MainAvalonia\dashboard_phase1_plan.md
+    d:\SideProject\07MainAvalonia\docs\troubleshooting_log.md
+    d:\SideProject\07MainAvalonia\docs\dashboard_phase1_plan.md
+    d:\SideProject\07MainAvalonia\docs\plan.md
 
 Always read the current file content first before appending, to avoid duplicates
-and to pick the correct next bug number.
+and to pick the correct next bug number. Remember to ask the user before writing.
 
 ---
 
@@ -84,9 +91,10 @@ When a plan item is partially done or blocked:
 
 1. READ the current troubleshooting_log.md to find the last bug number.
 2. COMPOSE the new entry using the template above.
-3. APPEND it using run_command with PowerShell Add-Content (UTF-8).
-4. If a plan item was also completed, READ dashboard_phase1_plan.md and update it.
-5. CONFIRM to the user: "Added Bug N to troubleshooting_log.md"
+3. If a plan or milestone item was also completed, READ dashboard_phase1_plan.md and/or plan.md and draft the updates.
+4. **ASK the user** for explicit permission to apply the modifications by showing the planned changes.
+5. Once approved, WRITE/APPEND the changes to the files.
+6. CONFIRM to the user: "Added Bug N to troubleshooting_log.md and updated plan files."
 
 ---
 
@@ -109,4 +117,4 @@ When a plan item is partially done or blocked:
     
     *Last updated: YYYY-MM-DD*
     "@
-    Add-Content -Path "D:\SideProject\07MainAvalonia\troubleshooting_log.md" -Value $entry -Encoding UTF8
+    Add-Content -Path "D:\SideProject\07MainAvalonia\docs\troubleshooting_log.md" -Value $entry -Encoding UTF8
