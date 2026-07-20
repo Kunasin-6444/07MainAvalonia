@@ -15,7 +15,7 @@ class PosStatus(BaseModel):
 class Transaction(BaseModel):
     date: str
     sale_lot: str
-    prod_id: str
+    prod_name: str
     amount: float
     payment_type: List[str]
 

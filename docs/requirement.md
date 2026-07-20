@@ -26,10 +26,12 @@
 | 2.1 | Show latest 1 transaction per POS (4 rows total) | ✅ API done | Data returned by `/pos/dashboard` |
 | 2.2 | Columns: เวลา, POS, รายการสินค้าที่ขาย, ยอดเงิน, รูปแบบการชำระเงิน | ✅ API done | `upd_date`, `sale_lot`, `prod_id`, `amount`, derived payment |
 | 2.3 | Payment type derived from non-zero keys in `payment` JSON | ✅ API done | Returns list: `["cash"]`, `["credit","cash"]`, etc. |
-| 2.4 | Section 2 **not rendering** in Avalonia UI | 🔴 Bug | DataGrid / Donut visible in AXAML but not appearing — under investigation |
+| 2.4 | Section 2 rendering in Avalonia UI | ✅ Done | DataGrid & Donut visible with height constraint & combined endpoint |
 | 2.5 | Donut chart — bill count per payment method (all-time) | ✅ API done | `_aggregate_payment_summary()` counts each non-zero method |
 | 2.6 | Donut tooltip: % + total amount (บาท) per method | ✅ API done | `ToolTipLabelFormatter` set in `BuildDonutSeries()` |
 | 2.7 | Donut scope: all-time (not just feed rows) | ✅ Done | Uses full `rows` not just `latest_per_lot` |
+| 2.8 | Live highlight on top (latest) transaction row | 🚧 In Progress | Highlight latest transaction row in feed table matching Live POS card |
+| 2.9 | Responsive table layout & page typography readability | 🚧 In Progress | DataGrid fits container, right-aligned numbers, enhanced font hierarchy |
 
 **API endpoint:** `GET /pos/dashboard` → `DashboardResponse` (combined Section 1 + 2)
 
@@ -78,4 +80,4 @@
 
 ---
 
-*Last updated: 2026-07-17*
+*Last updated: 2026-07-20*

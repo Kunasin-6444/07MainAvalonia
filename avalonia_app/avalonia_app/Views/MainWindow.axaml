@@ -90,7 +90,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="เวลา"    Binding="{Binding Date, Mode=OneWay}"    Width="110" />
                         <DataGridTextColumn Header="POS"     Binding="{Binding SaleLot, StringFormat='POS \{0\}', Mode=OneWay}" Width="80" />
-                        <DataGridTextColumn Header="รายการสินค้าที่ขาย" Binding="{Binding ProdId, Mode=OneWay}"  Width="*" />
+                        <DataGridTextColumn Header="รายการสินค้าที่ขาย" Binding="{Binding ProdName, Mode=OneWay}"  Width="*" />
                         <DataGridTextColumn Header="ยอดเงิน" Binding="{Binding Amount, StringFormat=\{0:N0\}, Mode=OneWay}"    Width="100" />
                         <DataGridTextColumn Header="รูปแบบการชำระเงิน"  Binding="{Binding PaymentTypeDisplay, Mode=OneWay}"    Width="140" />
                     </DataGrid.Columns>
@@ -98,7 +98,7 @@
 
                 <Border Grid.Column="1" Margin="12,0,0,0" Padding="12"
                         CornerRadius="10" Background="#1A2233">
-                    <lvc:PieChart Series="{Binding DonutSeries}" LegendPosition="Bottom" />
+                    <lvc:PieChart Series="{Binding DonutSeries}" LegendPosition="Bottom" LegendTextPaint="{Binding LegendTextPaint}"/>
                 </Border>
             </Grid>
 

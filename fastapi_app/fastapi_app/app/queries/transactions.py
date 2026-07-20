@@ -29,9 +29,15 @@ def fetch_transactions():
             feed = []
             for lot in pos_list:
                 q = """
-                    SELECT b.sale_lot, b.prod_id, l.amount, l.payment, l.upd_date, l.id AS list_id
+                    SELECT b.sale_lot, 
+                           s.prod_name, 
+                           l.amount, 
+                           l.payment, 
+                           l.upd_date, 
+                           l.id AS list_id
                     FROM prod_out_bill b
                     JOIN prod_out_bill_list l ON b.bill_no = l.bill_no
+                    JOIN prod_stock s ON s.prod_id = b.prod_id
                     WHERE b.sale_lot = %s
                     ORDER BY l.id DESC
                     LIMIT 1
@@ -49,7 +55,7 @@ def fetch_transactions():
                 transactions.append({
                     "date": str(r["upd_date"]),
                     "sale_lot": r["sale_lot"],
-                    "prod_id": r["prod_id"],
+                    "prod_name": r["prod_name"],
                     "amount": r["amount"],
                     "payment_type": _parse_payment_dict(r["payment"]),
                 })

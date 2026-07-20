@@ -10,8 +10,8 @@ public class TransactionModel
     [JsonPropertyName("sale_lot")]
     public string SaleLot { get; set; } = "";
 
-    [JsonPropertyName("prod_id")]
-    public string ProdId { get; set; } = "";
+    [JsonPropertyName("prod_name")]
+    public string ProdName { get; set; } = "";
 
     [JsonPropertyName("amount")]
     public double Amount { get; set; }

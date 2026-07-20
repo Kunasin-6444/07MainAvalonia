@@ -17,6 +17,7 @@ namespace NakhonPartsDashboard.ViewModels;
 /// </summary>
 public class MainWindowViewModel : INotifyPropertyChanged
 {
+
     private readonly ApiClient _api = new();
     private readonly System.Timers.Timer _refreshTimer;
 
@@ -52,6 +53,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         get => _statusMessage;
         set { _statusMessage = value; OnPropertyChanged(); }
+    }
+
+    // ADD THIS for the legend text color
+    private LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint _legendTextPaint = 
+        new(SKColors.White);
+    public LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint LegendTextPaint
+    {
+        get => _legendTextPaint;
+        set { _legendTextPaint = value; OnPropertyChanged(); }
     }
 
     // ── Command ───────────────────────────────────────────────────────────────
@@ -113,6 +123,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 Values = new[] { summary.Credit.BillCount * 1.0 },
                 Name = "เครดิต",
+                InnerRadius = 50,
                 Fill = new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SKColors.DodgerBlue),
                 ToolTipLabelFormatter = _ =>
                     $"เครดิต: {summary.Credit.Percent}% ({summary.Credit.TotalAmount:N0} บาท)"
@@ -121,6 +132,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 Values = new[] { summary.Transfer.BillCount * 1.0 },
                 Name = "โอนเงิน",
+                InnerRadius = 50,
                 Fill = new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SKColors.LimeGreen),
                 ToolTipLabelFormatter = _ =>
                     $"โอนเงิน: {summary.Transfer.Percent}% ({summary.Transfer.TotalAmount:N0} บาท)"
@@ -129,6 +141,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 Values = new[] { summary.Cash.BillCount * 1.0 },
                 Name = "เงินสด",
+                InnerRadius = 50,
                 Fill = new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SKColors.OrangeRed),
                 ToolTipLabelFormatter = _ =>
                     $"เงินสด: {summary.Cash.Percent}% ({summary.Cash.TotalAmount:N0} บาท)"
