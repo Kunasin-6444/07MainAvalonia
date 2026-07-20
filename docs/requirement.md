@@ -30,8 +30,8 @@
 | 2.5 | Donut chart — bill count per payment method (all-time) | ✅ API done | `_aggregate_payment_summary()` counts each non-zero method |
 | 2.6 | Donut tooltip: % + total amount (บาท) per method | ✅ API done | `ToolTipLabelFormatter` set in `BuildDonutSeries()` |
 | 2.7 | Donut scope: all-time (not just feed rows) | ✅ Done | Uses full `rows` not just `latest_per_lot` |
-| 2.8 | Live highlight on top (latest) transaction row | 🚧 In Progress | Highlight latest transaction row in feed table matching Live POS card |
-| 2.9 | Responsive table layout & page typography readability | 🚧 In Progress | DataGrid fits container, right-aligned numbers, enhanced font hierarchy |
+| 2.8 | Live highlight on top (latest) transaction row | ✅ Done | Green accent row highlight & LIVE badge matching Live POS card |
+| 2.9 | Responsive table layout & page typography readability | ✅ Done | Container fit, flex star-sizing, dark theme typography & header bar |
 
 **API endpoint:** `GET /pos/dashboard` → `DashboardResponse` (combined Section 1 + 2)
 

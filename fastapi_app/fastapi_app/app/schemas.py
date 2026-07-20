@@ -18,6 +18,7 @@ class Transaction(BaseModel):
     prod_name: str
     amount: float
     payment_type: List[str]
+    is_live: bool = False
 
 
 class PaymentStat(BaseModel):

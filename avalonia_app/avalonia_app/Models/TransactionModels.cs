@@ -19,6 +19,11 @@ public class TransactionModel
     [JsonPropertyName("payment_type")]
     public List<string> PaymentType { get; set; } = new();
 
+    [JsonPropertyName("is_live")]
+    public bool IsLive { get; set; }
+
+    public string PosDisplay => $"POS {SaleLot}";
+
     public string PaymentTypeDisplay => string.Join(", ", PaymentType.Select(ThaiLabel));
 
     private static string ThaiLabel(string key) => key switch

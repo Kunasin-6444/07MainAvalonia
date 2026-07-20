@@ -51,13 +51,14 @@ def fetch_transactions():
             feed.sort(key=lambda x: x["list_id"], reverse=True)
 
             transactions = []
-            for r in feed:
+            for idx, r in enumerate(feed):
                 transactions.append({
                     "date": str(r["upd_date"]),
                     "sale_lot": r["sale_lot"],
                     "prod_name": r["prod_name"],
                     "amount": r["amount"],
                     "payment_type": _parse_payment_dict(r["payment"]),
+                    "is_live": (idx == 0),
                 })
 
             # 2. Fetch all-time payment counts and sums directly in SQL for the donut chart
