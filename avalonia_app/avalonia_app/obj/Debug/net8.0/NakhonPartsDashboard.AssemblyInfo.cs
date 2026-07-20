@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NakhonPartsDashboard")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16670849ab8f16d12aed7f214d83b8c124505262")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83b718d9a5cb78b80fc08a330065b3539ea92bf5")]
 [assembly: System.Reflection.AssemblyProductAttribute("NakhonPartsDashboard")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NakhonPartsDashboard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -30,14 +30,14 @@ def fetch_transactions():
             for lot in pos_list:
                 q = """
                     SELECT b.sale_lot, 
-                           s.prod_name, 
+                           COALESCE(s.prod_name, b.prod_id) AS prod_name, 
                            l.amount, 
                            l.payment, 
                            l.upd_date, 
                            l.id AS list_id
                     FROM prod_out_bill b
                     JOIN prod_out_bill_list l ON b.bill_no = l.bill_no
-                    JOIN prod_stock s ON s.prod_id = b.prod_id
+                    LEFT JOIN prod_stock s ON s.prod_id = b.prod_id
                     WHERE b.sale_lot = %s
                     ORDER BY l.id DESC
                     LIMIT 1
