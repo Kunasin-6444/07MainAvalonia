@@ -1,0 +1,234 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NakhonPartsDashboard.ViewModels"
+        xmlns:m="using:NakhonPartsDashboard.Models"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        x:Class="NakhonPartsDashboard.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="แผงควบคุมกลาง - นครอะไหล่ (Central Dashboard)"
+        Width="1400" Height="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B0F19"
+        FontFamily="Segoe UI, Inter, Tahoma, sans-serif">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="24">
+
+            <!-- Top Header Bar -->
+            <DockPanel LastChildFill="False">
+                <StackPanel DockPanel.Dock="Left" Spacing="4">
+                    <TextBlock Text="แผงควบคุมกลาง - นครอะไหล่"
+                               FontSize="32" FontWeight="Bold" Foreground="#F8FAFC" />
+                    <TextBlock Text="Nakhon Parts Central Dashboard — POS Real-time Monitoring"
+                               FontSize="16" Foreground="#64748B" />
+                </StackPanel>
+
+                <Border DockPanel.Dock="Right" Background="#161F30" BorderBrush="#26334D" BorderThickness="1" CornerRadius="20" Padding="14,8" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Ellipse Width="10" Height="10" Fill="#22C55E" />
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#CBD5E1" FontSize="15" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+
+            <!-- 1. POS Status Cards Section -->
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Border Background="#10B981" CornerRadius="6" Width="30" Height="30">
+                        <TextBlock Text="1" Foreground="White" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="สถานะเครื่อง POS ทั้งหมด (POS Status Cards)"
+                               FontSize="22" FontWeight="Bold" Foreground="#F1F5F9" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding PosCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PosCardViewModel">
+                            <Border Margin="6" Padding="18" CornerRadius="12"
+                                    Background="#161F30"
+                                    BorderThickness="2"
+                                    BorderBrush="{Binding IsLive, Converter={x:Static vm:LiveBorderConverter.Instance}}">
+                                <StackPanel Spacing="14">
+                                    <!-- POS Title & Live Badge -->
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding PosLabel}" FontWeight="Bold"
+                                                   Foreground="#F8FAFC" FontSize="22" />
+                                        <Border DockPanel.Dock="Right" Background="#22C55E" CornerRadius="4" Padding="8,3"
+                                                IsVisible="{Binding IsLive}" HorizontalAlignment="Right">
+                                            <TextBlock Text="● Live" Foreground="Black" FontSize="13" FontWeight="Bold" />
+                                        </Border>
+                                    </DockPanel>
+
+                                    <!-- Last Sale Banner -->
+                                    <Border Background="#0F172A" Padding="12,10" CornerRadius="8" BorderBrush="#26334D" BorderThickness="1">
+                                        <DockPanel>
+                                            <TextBlock Text="Last Sale:" Foreground="#94A3B8" FontSize="14" FontWeight="Medium" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding LastSaleTotal, StringFormat='฿\{0:N0\}'}" 
+                                                       FontWeight="Bold" Foreground="#FFFFFF" FontSize="18" 
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <TextBlock.Effect>
+                                                    <DropShadowEffect Color="White" BlurRadius="6" OffsetX="0" OffsetY="0" Opacity="0.5"/>
+                                                </TextBlock.Effect>
+                                            </TextBlock>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <!-- Payment Totals Table with Visible Lines -->
+                                    <Border Background="#0F172A" CornerRadius="8" BorderBrush="#26334D" BorderThickness="1" Padding="1">
+                                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
+                                            <!-- Table Header Row -->
+                                            <Border Grid.Row="0" Grid.Column="0" Background="#1E293B" BorderBrush="#26334D" BorderThickness="0,0,1,1" Padding="6,6">
+                                                <TextBlock Text="บช:เครดิต" FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Row="0" Grid.Column="1" Background="#1E293B" BorderBrush="#26334D" BorderThickness="0,0,1,1" Padding="6,6">
+                                                <TextBlock Text="โอนเงิน" FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Row="0" Grid.Column="2" Background="#1E293B" BorderBrush="#26334D" BorderThickness="0,0,0,1" Padding="6,6">
+                                                <TextBlock Text="เงินสด" FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Table Value Row -->
+                                            <Border Grid.Row="1" Grid.Column="0" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="6,8">
+                                                <TextBlock Text="{Binding Credit, StringFormat='\{0:N0\}'}"
+                                                           FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Row="1" Grid.Column="1" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="6,8">
+                                                <TextBlock Text="{Binding Transfer, StringFormat='\{0:N0\}'}"
+                                                           FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Row="1" Grid.Column="2" Padding="6,8">
+                                                <TextBlock Text="{Binding Cash, StringFormat='\{0:N0\}'}"
+                                                           FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- 2. Live Transaction Feed + Donut Section -->
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Border Background="#10B981" CornerRadius="6" Width="30" Height="30">
+                        <TextBlock Text="2" Foreground="White" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="รายการธุรกรรมล่าสุด (Live Transaction Feed) + สัดส่วนการชำระเงิน"
+                               FontSize="22" FontWeight="Bold" Foreground="#F1F5F9" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Grid ColumnDefinitions="5* 2*">
+                    <!-- Custom Table Container (Auto-fits 4 rows with ZERO empty space) -->
+                    <Border Grid.Column="0" Margin="0,0,8,0" Padding="1"
+                            CornerRadius="12" Background="#161F30"
+                            BorderBrush="#26334D" BorderThickness="1"
+                            VerticalAlignment="Stretch"
+                            Grid.IsSharedSizeScope="True">
+                        <StackPanel>
+                            <!-- Table Header Row -->
+                            <Border Background="#0F172A" BorderBrush="#26334D" BorderThickness="0,0,0,1"
+                                    CornerRadius="11,11,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ColDate"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ColPos"/>
+                                        <ColumnDefinition Width="*"/> <!-- ให้ชื่อสินค้าขยายเต็มพื้นที่ที่เหลือ -->
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ColAmt"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ColType"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,10">
+                                        <TextBlock Text="วันที่" FontSize="15" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="1" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,10">
+                                        <TextBlock Text="POS" FontSize="15" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="2" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,10">
+                                        <TextBlock Text="รายการสินค้าที่ขาย" FontSize="15" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    </Border>
+                                    <Border Grid.Column="3" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,10">
+                                        <TextBlock Text="ยอดเงิน (บาท)" FontSize="15" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    </Border>
+                                    <Border Grid.Column="4" Padding="12,10">
+                                        <TextBlock Text="รูปแบบการชำระเงิน" FontSize="15" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Table Items Control -->
+                            <ItemsControl ItemsSource="{Binding Transactions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:TransactionModel">
+                                        <Border Tag="{Binding IsLive}" BorderBrush="#26334D" BorderThickness="0,0,0,1">
+                                            <Border.Styles>
+                                                <Style Selector="Border" x:DataType="m:TransactionModel">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                </Style>
+                                                <Style Selector="Border[Tag=True]" x:DataType="m:TransactionModel">
+                                                    <Setter Property="Background" Value="#123824"/>
+                                                </Style>
+                                            </Border.Styles>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColDate"/>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColPos"/>
+                                                    <ColumnDefinition Width="*"/> <!-- ให้ชื่อสินค้าขยายเต็มพื้นที่ที่เหลือ -->
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColAmt"/>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColType"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,11">
+                                                    <TextBlock Text="{Binding Date}" FontSize="15" Foreground="#E2E8F0" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Grid.Column="1" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,11">
+                                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding PosDisplay}" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                                                        <Border Background="#22C55E" CornerRadius="4" Padding="5,2" IsVisible="{Binding IsLive}" VerticalAlignment="Center">
+                                                            <TextBlock Text="● LIVE" Foreground="Black" FontSize="10" FontWeight="Bold"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                </Border>
+                                                <Border Grid.Column="2" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,11">
+                                                    <TextBlock Text="{Binding ProdName}" FontSize="15" Foreground="#E2E8F0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                </Border>
+                                                <Border Grid.Column="3" BorderBrush="#26334D" BorderThickness="0,0,1,0" Padding="12,11">
+                                                    <TextBlock Text="{Binding Amount, StringFormat='฿\{0:N0\}'}" FontSize="15" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center" TextWrapping="Wrap">
+                                                        <TextBlock.Effect>
+                                                            <DropShadowEffect Color="White" BlurRadius="6" OffsetX="0" OffsetY="0" Opacity="0.5"/>
+                                                        </TextBlock.Effect>
+                                                    </TextBlock>
+                                                </Border>
+                                                <Border Grid.Column="4" Padding="12,11">
+                                                    <TextBlock Text="{Binding PaymentTypeDisplay}" FontSize="15" Foreground="#E2E8F0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Donut Chart Container (Matches Left Border Height Automatically) -->
+                    <Border Grid.Column="1" Margin="8,0,0,0" Padding="16,14"
+                            CornerRadius="12" Background="#161F30"
+                            BorderBrush="#26334D" BorderThickness="1"
+                            VerticalAlignment="Stretch">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="สัดส่วนชำระเงิน (All-Time Payment Method)"
+                                       FontSize="15" FontWeight="Bold" Foreground="#94A3B8" Margin="0,0,0,8"/>
+                            <lvc:PieChart Series="{Binding DonutSeries}" LegendPosition="Left" LegendTextPaint="{Binding LegendTextPaint}"/>
+                        </DockPanel>
+                    </Border>
+
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
